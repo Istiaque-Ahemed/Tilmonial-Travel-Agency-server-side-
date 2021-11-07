@@ -19,6 +19,8 @@ async function run() {
         await client.connect();
         const database = client.db('travelAgency');
         const serviceCollection = database.collection('services');
+        const orderCollection = database.collection("orders");
+
         // GET services API
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({})
@@ -42,6 +44,48 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.json(service)
         })
+
+        // Post order API 
+        app.post("/orders", async (req, res) => {
+            const order = req.body;
+            console.log("hit the post api", order);
+            const result = await orderCollection.insertOne(order);
+            console.log(result);
+            res.json(result);
+        });
+        // GET order api
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({})
+            const orders = await cursor.toArray();
+            res.send(orders)
+        })
+        // Delete Api
+        app.delete('/services/:id', async (req, rs) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await serviceCollection.deleteOne(query)
+            res.json(result)
+
+
+        })
+        // DELETE API Manage Order
+        app.delete("/orders/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
+        });
+
+        // GET My Order
+        app.get("/orders/:email", async (req, res) => {
+            const email = req.params.email;
+            console.log("getting specific service", email);
+            const result = await orderCollection.find({ email }).toArray();
+            console.log();
+            res.send(result);
+        });
+
+
 
 
     }
