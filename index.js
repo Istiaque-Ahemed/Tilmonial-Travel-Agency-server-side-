@@ -4,7 +4,7 @@ const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 require('dotenv').config();
 const app = express()
-const port = 5000;
+const port = process.env.POTR || 5000;
 
 //middleware
 app.use(cors());
@@ -31,10 +31,7 @@ async function run() {
         app.post('/services', async (req, res) => {
             const service = req.body;
             console.log('hit the post api', service);
-
-
             const result = await serviceCollection.insertOne(service);
-            console.log(result);
             res.json(result)
         })
         // GET SINGLE DATA
@@ -48,9 +45,7 @@ async function run() {
         // Post order API 
         app.post("/orders", async (req, res) => {
             const order = req.body;
-            console.log("hit the post api", order);
             const result = await orderCollection.insertOne(order);
-            console.log(result);
             res.json(result);
         });
         // GET order api
@@ -79,9 +74,7 @@ async function run() {
         // GET My Order
         app.get("/orders/:email", async (req, res) => {
             const email = req.params.email;
-            console.log("getting specific service", email);
             const result = await orderCollection.find({ email }).toArray();
-            console.log();
             res.send(result);
         });
 
